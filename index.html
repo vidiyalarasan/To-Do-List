@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>To-Do List App</title>
+  <meta charset="UTF-8">
+  <title>To-Do List with Alarm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     * {
@@ -12,7 +12,7 @@
     }
 
     body {
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #43cea2, #185a9d);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -21,46 +21,46 @@
     }
 
     .todo-app {
-      background: #fff;
+      background: white;
       width: 100%;
-      max-width: 400px;
+      max-width: 450px;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    .todo-app h1 {
+    h1 {
       text-align: center;
       margin-bottom: 20px;
-      color: #333;
     }
 
     .input-group {
       display: flex;
+      flex-direction: column;
       gap: 10px;
       margin-bottom: 20px;
     }
 
-    .input-group input {
-      flex: 1;
+    input, button {
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
       font-size: 16px;
     }
 
-    .input-group button {
-      padding: 10px 15px;
+    input {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background: #185a9d;
+      color: white;
       border: none;
-      background: #667eea;
-      color: #fff;
-      font-size: 16px;
       border-radius: 5px;
       cursor: pointer;
     }
 
-    .input-group button:hover {
-      background: #556cd6;
+    button:hover {
+      background: #12497d;
     }
 
     ul {
@@ -70,11 +70,12 @@
     }
 
     li {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       padding: 10px;
       border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
 
     li.completed span {
@@ -82,43 +83,51 @@
       color: #999;
     }
 
-    li span {
+    .task-info {
       flex: 1;
       cursor: pointer;
+    }
+
+    .time {
+      font-size: 12px;
+      color: #666;
     }
 
     .delete-btn {
       background: #ff4d4d;
       border: none;
       color: white;
-      padding: 5px 10px;
+      padding: 5px 8px;
       border-radius: 5px;
       cursor: pointer;
-    }
-
-    .delete-btn:hover {
-      background: #e60000;
     }
   </style>
 </head>
 <body>
 
   <div class="todo-app">
-    <h1>📝 To-Do List</h1>
+    <h1>⏰ To-Do with Alarm</h1>
 
     <div class="input-group">
-      <input type="text" id="todoInput" placeholder="Add a new task..." />
-      <button onclick="addTodo()">Add</button>
+      <input id="taskInput" type="text" placeholder="Task name">
+      <input id="timeInput" type="datetime-local">
+      <button onclick="addTodo()">Add Task</button>
     </div>
 
     <ul id="todoList"></ul>
   </div>
 
   <script>
-    const input = document.getElementById("todoInput");
+    const taskInput = document.getElementById("taskInput");
+    const timeInput = document.getElementById("timeInput");
     const list = document.getElementById("todoList");
 
     let todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+    // Ask notification permission
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
 
     function saveTodos() {
       localStorage.setItem("todos", JSON.stringify(todos));
@@ -131,51 +140,87 @@
         const li = document.createElement("li");
         if (todo.completed) li.classList.add("completed");
 
-        const span = document.createElement("span");
-        span.textContent = todo.text;
-        span.onclick = () => toggleTodo(todo.id);
+        const info = document.createElement("div");
+        info.className = "task-info";
+        info.onclick = () => toggleTodo(todo.id);
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.className = "delete-btn";
-        deleteBtn.onclick = () => deleteTodo(todo.id);
+        info.innerHTML = `
+          <span>${todo.text}</span>
+          <div class="time">${todo.time ? new Date(todo.time).toLocaleString() : ""}</div>
+        `;
 
-        li.appendChild(span);
-        li.appendChild(deleteBtn);
+        const del = document.createElement("button");
+        del.textContent = "Delete";
+        del.className = "delete-btn";
+        del.onclick = () => deleteTodo(todo.id);
+
+        li.appendChild(info);
+        li.appendChild(del);
         list.appendChild(li);
       });
     }
 
     function addTodo() {
-      const text = input.value.trim();
-      if (!text) return;
+      const text = taskInput.value.trim();
+      const time = timeInput.value;
 
-      todos.push({
+      if (!text) return alert("Enter a task");
+
+      const todo = {
         id: Date.now(),
         text,
-        completed: false
-      });
+        time,
+        completed: false,
+        notified: false
+      };
 
-      input.value = "";
+      todos.push(todo);
       saveTodos();
+      scheduleAlarm(todo);
+
+      taskInput.value = "";
+      timeInput.value = "";
       renderTodos();
     }
 
     function toggleTodo(id) {
-      todos = todos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      todos = todos.map(t =>
+        t.id === id ? { ...t, completed: !t.completed } : t
       );
       saveTodos();
       renderTodos();
     }
 
     function deleteTodo(id) {
-      todos = todos.filter(todo => todo.id !== id);
+      todos = todos.filter(t => t.id !== id);
       saveTodos();
       renderTodos();
     }
 
-    // Initial render
+    function scheduleAlarm(todo) {
+      if (!todo.time) return;
+
+      const delay = new Date(todo.time).getTime() - Date.now();
+      if (delay <= 0) return;
+
+      setTimeout(() => {
+        if (todo.notified) return;
+
+        if (Notification.permission === "granted") {
+          new Notification("⏰ Reminder", {
+            body: todo.text
+          });
+        }
+
+        alert("Reminder: " + todo.text);
+
+        todo.notified = true;
+        saveTodos();
+      }, delay);
+    }
+
+    // Restore alarms on reload
+    todos.forEach(scheduleAlarm);
     renderTodos();
   </script>
 
