@@ -3,30 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mini Online Shopping</title>
-  <link rel="stylesheet" href="style.css"/>
+  <title>To-Do List App</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    .todo-app {
+      background: #fff;
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .todo-app h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .input-group button {
+      padding: 10px 15px;
+      border: none;
+      background: #667eea;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .input-group button:hover {
+      background: #556cd6;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    li.completed span {
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    li span {
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      background: #ff4d4d;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: #e60000;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1>🛒 Mini Shop</h1>
-  <input type="text" id="searchBox" placeholder="Search products...">
-  <div class="cart">Cart 🛍️ <span id="cartCount">0</span></div>
-</header>
+  <div class="todo-app">
+    <h1>📝 To-Do List</h1>
 
-<section class="banner">
-  <h2>Welcome to Mini Online Store</h2>
-  <p>Best gadgets at best prices</p>
-</section>
+    <div class="input-group">
+      <input type="text" id="todoInput" placeholder="Add a new task..." />
+      <button onclick="addTodo()">Add</button>
+    </div>
 
-<main id="product-list" class="product-grid">
-  <!-- Products injected by JS -->
-</main>
+    <ul id="todoList"></ul>
+  </div>
 
-<footer>
-  <p>© 2025 Mini Shop | Designed by Vidiyalarasan</p>
-</footer>
+  <script>
+    const input = document.getElementById("todoInput");
+    const list = document.getElementById("todoList");
 
-<script src="script.js"></script>
+    let todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+    function saveTodos() {
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }
+
+    function renderTodos() {
+      list.innerHTML = "";
+
+      todos.forEach(todo => {
+        const li = document.createElement("li");
+        if (todo.completed) li.classList.add("completed");
+
+        const span = document.createElement("span");
+        span.textContent = todo.text;
+        span.onclick = () => toggleTodo(todo.id);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = () => deleteTodo(todo.id);
+
+        li.appendChild(span);
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function addTodo() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      todos.push({
+        id: Date.now(),
+        text,
+        completed: false
+      });
+
+      input.value = "";
+      saveTodos();
+      renderTodos();
+    }
+
+    function toggleTodo(id) {
+      todos = todos.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      );
+      saveTodos();
+      renderTodos();
+    }
+
+    function deleteTodo(id) {
+      todos = todos.filter(todo => todo.id !== id);
+      saveTodos();
+      renderTodos();
+    }
+
+    // Initial render
+    renderTodos();
+  </script>
+
 </body>
 </html>
