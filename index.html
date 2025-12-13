@@ -3,34 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Sample Website</title>
-
-  <!-- Link CSS -->
-  <link rel="stylesheet" href="style.css">
+  <title>Mini Online Shopping | Jul 2025</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header>
-    <h1>Welcome to My Website</h1>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
-    </nav>
+    <h1>🛒 Mini Online Shopping</h1>
+    <div class="header-actions">
+      <input type="text" id="searchBox" placeholder="Search products...">
+      <div class="cart">
+        🛍️ Cart: <span id="cartCount">0</span>
+      </div>
+    </div>
   </header>
 
   <main>
-    <section class="intro">
-      <h2>Hello, world!</h2>
-      <p>This website was created using HTML, CSS, and JavaScript — and it’s hosted on GitHub Pages!</p>
-      <button id="changeColorBtn">Change Background Color</button>
+    <section id="product-list" class="product-grid">
+      <!-- Products will be inserted here by JS -->
     </section>
   </main>
 
   <footer>
-    <p>© 2025 Vidiyalarasan. All rights reserved.</p>
+    <p>© 2025 Mini Online Shopping | Designed by Vidiyalarasan</p>
   </footer>
 
-  <!-- Link JS -->
-  <script src="script.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
