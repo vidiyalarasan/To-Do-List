@@ -1,9 +1,30 @@
 const products = [
-  { id: 1, name: "Laptop", price: 900, img: "https://picsum.photos/300?1" },
-  { id: 2, name: "Headphones", price: 150, img: "https://picsum.photos/300?2" },
-  { id: 3, name: "Smart Watch", price: 250, img: "https://picsum.photos/300?3" },
-  { id: 4, name: "Shoes", price: 120, img: "https://picsum.photos/300?4" }
+  {
+    id: 1,
+    name: "Laptop",
+    price: 900,
+    img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8"
+  },
+  {
+    id: 2,
+    name: "Headphones",
+    price: 150,
+    img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e"
+  },
+  {
+    id: 3,
+    name: "Smart Watch",
+    price: 250,
+    img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30"
+  },
+  {
+    id: 4,
+    name: "Shoes",
+    price: 120,
+    img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+  }
 ];
+
 
 const list = document.getElementById("product-list");
 const cartCount = document.getElementById("cart-count");
