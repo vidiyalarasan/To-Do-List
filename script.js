@@ -1,3 +1,6 @@
+/***********************
+ * PRODUCT DATA
+ ***********************/
 const products = [
   {
     id: 1,
@@ -25,7 +28,10 @@ const products = [
   }
 ];
 
-const list = document.getElementById("product-list");
+/***********************
+ * DOM ELEMENTS
+ ***********************/
+const productList = document.getElementById("product-list");
 const cartItems = document.getElementById("cart-items");
 const cartCount = document.getElementById("cart-count");
 const totalEl = document.getElementById("total");
@@ -33,26 +39,42 @@ const totalEl = document.getElementById("total");
 const cartSidebar = document.getElementById("cart-sidebar");
 const cartOverlay = document.getElementById("cart-overlay");
 
+const checkoutModal = document.getElementById("checkout-modal");
+const successModal = document.getElementById("success-modal");
+
+const searchInput = document.getElementById("search");
+const themeToggle = document.getElementById("theme-toggle");
+
+/***********************
+ * STATE
+ ***********************/
 let cart = [];
 
-/* RENDER PRODUCTS */
-function render(items) {
-  list.innerHTML = "";
-  items.forEach(p => {
+/***********************
+ * RENDER PRODUCTS
+ ***********************/
+function renderProducts(items) {
+  productList.innerHTML = "";
+
+  items.forEach(product => {
     const div = document.createElement("div");
     div.className = "product";
+
     div.innerHTML = `
-      <img src="${p.img}">
-      <h3>${p.name}</h3>
-      <p>₹${p.price}</p>
+      <img src="${product.img}">
+      <h3>${product.name}</h3>
+      <p>₹${product.price}</p>
       <button>Add to Cart</button>
     `;
-    div.querySelector("button").onclick = () => addToCart(p);
-    list.appendChild(div);
+
+    div.querySelector("button").onclick = () => addToCart(product);
+    productList.appendChild(div);
   });
 }
 
-/* CART FUNCTIONS */
+/***********************
+ * CART FUNCTIONS
+ ***********************/
 function addToCart(product) {
   cart.push(product);
   updateCart();
@@ -69,6 +91,7 @@ function updateCart() {
 
   cart.forEach((item, index) => {
     total += item.price;
+
     const div = document.createElement("div");
     div.className = "cart-item";
     div.innerHTML = `
@@ -78,6 +101,7 @@ function updateCart() {
         <button class="remove-btn">❌</button>
       </div>
     `;
+
     div.querySelector(".remove-btn").onclick = () => removeFromCart(index);
     cartItems.appendChild(div);
   });
@@ -86,7 +110,9 @@ function updateCart() {
   totalEl.textContent = total;
 }
 
-/* CART OPEN/CLOSE */
+/***********************
+ * CART OPEN / CLOSE
+ ***********************/
 document.getElementById("open-cart").onclick = () => {
   cartSidebar.classList.add("active");
   cartOverlay.classList.add("active");
@@ -97,28 +123,57 @@ cartOverlay.onclick = () => {
   cartOverlay.classList.remove("active");
 };
 
-/* CHECKOUT */
+/***********************
+ * CHECKOUT VALIDATION
+ ***********************/
 document.getElementById("checkout-btn").onclick = () => {
-  if (cart.length === 0) return alert("Cart is empty");
-  document.getElementById("checkout-modal").style.display = "flex";
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+  checkoutModal.style.display = "flex";
 };
 
 document.getElementById("place-order").onclick = () => {
-  document.getElementById("checkout-modal").style.display = "none";
-  document.getElementById("success-modal").style.display = "flex";
+  const name = document.getElementById("cust-name").value.trim();
+  const address = document.getElementById("cust-address").value.trim();
+  const phone = document.getElementById("cust-phone").value.trim();
+
+  if (name === "" || address === "" || phone === "") {
+    alert("⚠️ Please fill in all required information.");
+    return;
+  }
+
+  // Close checkout and show success
+  checkoutModal.style.display = "none";
+  successModal.style.display = "flex";
+
+  // Clear cart after order
+  cart = [];
+  updateCart();
 };
 
-/* SEARCH */
-document.getElementById("search").addEventListener("input", e => {
-  const val = e.target.value.toLowerCase();
-  render(products.filter(p => p.name.toLowerCase().includes(val)));
+/***********************
+ * SEARCH
+ ***********************/
+searchInput.addEventListener("input", e => {
+  const value = e.target.value.toLowerCase();
+  const filtered = products.filter(p =>
+    p.name.toLowerCase().includes(value)
+  );
+  renderProducts(filtered);
 });
 
-/* DARK MODE */
-const toggle = document.getElementById("theme-toggle");
-toggle.onclick = () => {
+/***********************
+ * DARK MODE
+ ***********************/
+themeToggle.onclick = () => {
   document.body.classList.toggle("dark");
-  toggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+  themeToggle.textContent =
+    document.body.classList.contains("dark") ? "☀️" : "🌙";
 };
 
-render(products);
+/***********************
+ * INIT
+ ***********************/
+renderProducts(products);
