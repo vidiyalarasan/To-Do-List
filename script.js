@@ -1,87 +1,45 @@
-/***********************
- * PRODUCT DATA
- ***********************/
 const products = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    price: 2999,
-    img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 2,
-    name: "Laptop",
-    price: 54999,
-    img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 3,
-    name: "Running Shoes",
-    price: 3999,
-    img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 4,
-    name: "Smart Watch",
-    price: 4999,
-    img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80"
-  }
+  { name: "Headphones", price: 2999, img: "images/headphones.jpg" },
+  { name: "Laptop", price: 54999, img: "images/laptop.jpg" },
+  { name: "Running Shoes", price: 3999, img: "images/shoes.jpg" },
+  { name: "Smart Watch", price: 4999, img: "images/watch.jpg" },
+  { name: "Bluetooth Speaker", price: 2599, img: "images/speaker.jpg" },
+  { name: "Backpack", price: 2199, img: "images/backpack.jpg" },
+  { name: "Power Bank", price: 1899, img: "images/powerbank.jpg" },
+  { name: "Keyboard", price: 1799, img: "images/keyboard.jpg" }
 ];
 
-/***********************
- * DOM ELEMENTS
- ***********************/
-const productList = document.getElementById("product-list");
-const cartItems = document.getElementById("cart-items");
-const cartCount = document.getElementById("cart-count");
-const totalEl = document.getElementById("total");
 
-const cartSidebar = document.getElementById("cart-sidebar");
-const cartOverlay = document.getElementById("cart-overlay");
+const productList = document.getElementById("productList");
+const cartItems = document.getElementById("cartItems");
+const cartCount = document.getElementById("cartCount");
+const totalAmount = document.getElementById("totalAmount");
 
-const checkoutModal = document.getElementById("checkout-modal");
-const successModal = document.getElementById("success-modal");
+const cartSidebar = document.getElementById("cartSidebar");
+const cartOverlay = document.getElementById("cartOverlay");
+const checkoutModal = document.getElementById("checkoutModal");
+const successModal = document.getElementById("successModal");
 
-const searchInput = document.getElementById("search");
-const themeToggle = document.getElementById("theme-toggle");
-
-/***********************
- * STATE
- ***********************/
 let cart = [];
 
-/***********************
- * RENDER PRODUCTS
- ***********************/
-function renderProducts(items) {
+function renderProducts(list) {
   productList.innerHTML = "";
-
-  items.forEach(product => {
+  list.forEach(p => {
     const div = document.createElement("div");
     div.className = "product";
-
     div.innerHTML = `
-      <img src="${product.img}">
-      <h3>${product.name}</h3>
-      <p>₹${product.price}</p>
+      <img src="${p.img}" alt="${p.name}">
+      <h4>${p.name}</h4>
+      <p>₹${p.price}</p>
       <button>Add to Cart</button>
     `;
-
-    div.querySelector("button").onclick = () => addToCart(product);
+    div.querySelector("button").onclick = () => addToCart(p);
     productList.appendChild(div);
   });
 }
 
-/***********************
- * CART FUNCTIONS
- ***********************/
-function addToCart(product) {
-  cart.push(product);
-  updateCart();
-}
-
-function removeFromCart(index) {
-  cart.splice(index, 1);
+function addToCart(p) {
+  cart.push(p);
   updateCart();
 }
 
@@ -89,31 +47,21 @@ function updateCart() {
   cartItems.innerHTML = "";
   let total = 0;
 
-  cart.forEach((item, index) => {
-    total += item.price;
-
-    const div = document.createElement("div");
-    div.className = "cart-item";
-    div.innerHTML = `
-      <span>${item.name}</span>
-      <div>
-        <span>₹${item.price}</span>
-        <button class="remove-btn">❌</button>
+  cart.forEach(p => {
+    total += p.price;
+    cartItems.innerHTML += `
+      <div class="cart-item">
+        <span>${p.name}</span>
+        <span>₹${p.price}</span>
       </div>
     `;
-
-    div.querySelector(".remove-btn").onclick = () => removeFromCart(index);
-    cartItems.appendChild(div);
   });
 
   cartCount.textContent = cart.length;
-  totalEl.textContent = total;
+  totalAmount.textContent = total.toLocaleString("en-IN");
 }
 
-/***********************
- * CART OPEN / CLOSE
- ***********************/
-document.getElementById("open-cart").onclick = () => {
+document.getElementById("openCart").onclick = () => {
   cartSidebar.classList.add("active");
   cartOverlay.classList.add("active");
 };
@@ -123,57 +71,31 @@ cartOverlay.onclick = () => {
   cartOverlay.classList.remove("active");
 };
 
-/***********************
- * CHECKOUT VALIDATION
- ***********************/
-document.getElementById("checkout-btn").onclick = () => {
-  if (cart.length === 0) {
-    alert("Your cart is empty!");
-    return;
-  }
+document.getElementById("checkoutBtn").onclick = () => {
+  if (!cart.length) return;
   checkoutModal.style.display = "flex";
 };
 
-document.getElementById("place-order").onclick = () => {
-  const name = document.getElementById("cust-name").value.trim();
-  const address = document.getElementById("cust-address").value.trim();
-  const phone = document.getElementById("cust-phone").value.trim();
+document.getElementById("closeCheckout").onclick = () => {
+  checkoutModal.style.display = "none";
+};
 
-  if (name === "" || address === "" || phone === "") {
-    alert("⚠️ Please fill in all required information.");
-    return;
-  }
-
-  // Close checkout and show success
+document.getElementById("placeOrderBtn").onclick = () => {
   checkoutModal.style.display = "none";
   successModal.style.display = "flex";
-
-  // Clear cart after order
   cart = [];
   updateCart();
 };
 
-/***********************
- * SEARCH
- ***********************/
-searchInput.addEventListener("input", e => {
-  const value = e.target.value.toLowerCase();
-  const filtered = products.filter(p =>
-    p.name.toLowerCase().includes(value)
-  );
-  renderProducts(filtered);
-});
-
-/***********************
- * DARK MODE
- ***********************/
-themeToggle.onclick = () => {
-  document.body.classList.toggle("dark");
-  themeToggle.textContent =
-    document.body.classList.contains("dark") ? "☀️" : "🌙";
+document.getElementById("search").oninput = e => {
+  const v = e.target.value.toLowerCase();
+  renderProducts(products.filter(p =>
+    p.name.toLowerCase().includes(v)
+  ));
 };
 
-/***********************
- * INIT
- ***********************/
+document.getElementById("themeToggle").onclick = () => {
+  document.body.classList.toggle("dark");
+};
+
 renderProducts(products);
