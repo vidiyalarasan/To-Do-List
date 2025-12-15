@@ -12,24 +12,26 @@
 <header class="navbar">
   <div class="logo">🛍️ ShopEase</div>
   <input type="text" id="search" placeholder="Search products...">
-  <div class="cart" id="open-cart">🛒 <span id="cart-count">0</span></div>
+  <div class="actions">
+    <button id="theme-toggle">🌙</button>
+    <div class="cart" id="open-cart">🛒 <span id="cart-count">0</span></div>
+  </div>
 </header>
 
 <section class="hero">
-  <h1>Shop Smart. Order Fast.</h1>
-  <p>Premium shopping experience</p>
+  <h1>Smart Shopping Experience</h1>
+  <p>Modern UI • Dark Mode • Checkout</p>
 </section>
 
 <main class="products" id="product-list"></main>
 
 <!-- CART -->
 <div class="cart-overlay" id="cart-overlay"></div>
-
 <div class="cart-sidebar" id="cart-sidebar">
   <h2>Your Cart</h2>
   <div id="cart-items"></div>
   <div class="cart-footer">
-    <h3>Total: $<span id="total">0</span></h3>
+    <h3>Total: ₹<span id="total">0</span></h3>
     <button id="checkout-btn">Checkout</button>
   </div>
 </div>
@@ -38,18 +40,18 @@
 <div class="checkout-modal" id="checkout-modal">
   <div class="checkout-box">
     <h2>Checkout</h2>
-    <input type="text" id="name" placeholder="Full Name">
-    <input type="text" id="address" placeholder="Address">
-    <input type="text" id="phone" placeholder="Phone Number">
+    <input type="text" placeholder="Full Name">
+    <input type="text" placeholder="Address">
+    <input type="text" placeholder="Phone">
     <button id="place-order">Place Order</button>
   </div>
 </div>
 
-<!-- ORDER SUCCESS -->
+<!-- SUCCESS -->
 <div class="success-modal" id="success-modal">
   <div class="success-box">
-    <h2>🎉 Order Placed!</h2>
-    <p>Thank you for shopping with us.</p>
+    <h2>✅ Order Successful</h2>
+    <p>Your order has been placed.</p>
     <button onclick="location.reload()">Continue Shopping</button>
   </div>
 </div>
